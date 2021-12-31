@@ -5,7 +5,8 @@ $address = json_decode( file_get_contents('php://input'), true );
 $ip = isset($address['address']) ? $address['address'] : '';
 $name = isset($address['name']) ? $address['name'] : '';
 $tipo = isset($address['type']) ? $address['type'] : '';
-
+/** Ping linux **/
+// exec("ping $ip -c 2 -W 10", $output, $status);
 if($ip)
 {
     if(exec("ping -n 2 -w 10 $ip", $output, $status))
