@@ -2,8 +2,7 @@
 
 include_once('../config_sql.php');
 
-$parametro = isset($_POST['busqueda']) ? $_POST['busqueda'] : '';
-$QUERY = " SELECT id,name,address,type,conf_file,ultimo_ping,status FROM addresses WHERE status != 1 AND address LIKE '%$parametro%' OR name LIKE '%$parametro%' ORDER BY status ASC ";
+$QUERY = " SELECT id,name,address,type,conf_file,ultimo_ping,status FROM addresses WHERE type = 'Scan' ORDER BY status ASC ";
 $REQUEST = mysqli_query($SQL,$QUERY);
 if($REQUEST->num_rows)
 {

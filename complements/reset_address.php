@@ -5,10 +5,10 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ping</title>
-    <link rel="shortcut icon" href="dist/images/isis0.png" type="image/x-icon">
-    <link rel="stylesheet" href="dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="dist/css/fonts/font.css">
-    <link rel="stylesheet" href="dist/css/offcanvas.css">
+    <link rel="shortcut icon" href="../dist/images/isis0.png" type="image/x-icon">
+    <link rel="stylesheet" href="../dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../dist/css/fonts/font.css">
+    <link rel="stylesheet" href="../dist/css/offcanvas.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <!-- <meta http-equiv="refresh" content="20"> -->
@@ -16,11 +16,6 @@
     <!-- Sweet Alert -->
     <script src = " https://unpkg.com/sweetalert/dist/sweetalert.min.js "></script>
     <style>
-        
-        * {
-        scrollbar-width: thin;
-        scrollbar-color: #6610f2  white;
-        }
 
         .text-gray{
             color: #607D8B;
@@ -44,7 +39,7 @@
 <header class="p-3 bg-dark text-white fixed-top">
     <div class="container-fluid">
         <div class="d-flex flex-wrap align-items-center justify-content-between justify-content-lg-start">
-            <a href="./" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
+            <a href="../" class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none">
                 <h5 class="poppins-bold">
                     <i class="bi bi-cone-striped me-1"></i>
                     Aplicacion Ping
@@ -52,9 +47,9 @@
             </a>
 
             <ul class="nav col-12 col-lg-auto ms-lg-auto mb-2 justify-content-center mb-md-0">  
-                <li><a href="complements/paused_address.php" target="_blank" class="nav-link px-2 text-white font2" title="Enliste las direcciones que ha pausado..."><i class="bi bi-play-circle"></i> Pausadas</a></li>                
-                <li><a href="complements/reset_address.php" class="nav-link px-2 text-white font2" title="Enliste los equipos que se han reseteado..."><i class="bi bi-arrow-clockwise me-1"></i>Reset</a></li>
-                <li><a href="complements/ping.php" class="nav-link px-2 text-white font2" title="Ejecute un ping a cualquier ip..."><i class="bi bi-shuffle me-1"></i>Ping</a></li>
+                <li><a href="paused_address.php" class="nav-link px-2 text-white font2" title="Enliste las direcciones que ha pausado..."><i class="bi bi-play-circle"></i> Pausadas</a></li>                
+                <li><a href="reset_address.php" class="nav-link px-2 text-white font2" title="Enliste los equipos que se han reseteado..."><i class="bi bi-arrow-clockwise me-1"></i>Reset</a></li>
+                <li><a href="ping.php" class="nav-link px-2 text-white font2" title="Ejecute un ping a cualquier ip..."><i class="bi bi-shuffle me-1"></i>Ping</a></li>
                 <li><a href="#" class="nav-link px-2 text-white font2"  title="Agregue una nueva direccion..." data-bs-toggle="modal" data-bs-target="#modalAdd" data-bs-whatever="@mdo"><i class="bi bi-plus-circle me-1"></i>Agregar</a></li>
             </ul>
         </div>
@@ -96,7 +91,7 @@
                         <td class="poppins-semibold">
                             <div class="btn-group">
                                 <button class="my-1 btn text-light bi bi-pencil-square" title="Editar información..."></button>
-                                <button class="my-1 btn text-light bi bi-pause-fill" title="Pausar ping..."></button>
+                                <button class="my-1 btn text-light bi bi-play-fill" title="Pausar ping..."></button>
                                 <button class="my-1 btn text-light bi bi-trash" title="Eliminar dirección ip..."></button>
                             </div>
                         </td>
@@ -111,7 +106,7 @@
                         <td class="poppins-semibold">
                             <div class="btn-group">
                                 <button class="my-1 btn text-light bi bi-pencil-square" title="Editar información..."></button>
-                                <button class="my-1 btn text-light bi bi-pause-fill" title="Pausar ping..."></button>
+                                <button class="my-1 btn text-light bi bi-play-fill" title="Volver a ping..."></button>
                                 <button class="my-1 btn text-light bi bi-trash" title="Eliminar dirección ip..."></button>
                             </div>
                         </td>
@@ -247,5 +242,5 @@
 
 </body>
 </html>
-<script src="dist/js/bootstrap.bundle.min.js"></script>
-<script src="dist/js/paint_addresses.js"></script>
+<script src="../dist/js/bootstrap.bundle.min.js"></script>
+<script src="../dist/js/reset_address.js"></script>
