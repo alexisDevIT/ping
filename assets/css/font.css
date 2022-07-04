@@ -1,0 +1,486 @@
+/**** Srtart inter ****/
+@font-face {
+    font-family: inter-black;
+    src: url('../fonts/Inter-Black.ttf');
+}
+
+.inter-black{
+    font-family: inter-black;
+}
+
+@font-face {
+    font-family: inter-bold;
+    src: url('../fonts/Inter-Bold.ttf');
+}
+
+.inter-bold{
+    font-family: inter-bold;
+}
+
+@font-face {
+    font-family: inter-medium;
+    src: url('../fonts/Inter-Medium.ttf');
+}
+
+.inter-medium{
+    font-family: inter-medium;
+}
+
+@font-face {
+    font-family: inter-regular;
+    src: url('../fonts/Inter-Regular.ttf');
+}
+
+.inter-regular{
+    font-family: inter-regular;
+}
+
+@font-face {
+    font-family: inter-semibold;
+    src: url('../fonts/Inter-SemiBold.ttf');
+}
+
+.inter-semibold{
+    font-family: inter-semibold;
+}
+
+/*** Start manrope ***/
+
+@font-face {
+    font-family: manrope-bold;
+    src: url('../fonts/Manrope-Bold.ttf');
+}
+
+.manrope-bold{
+    font-family: manrope-bold;
+}
+
+@font-face {
+    font-family: manrope-medium;
+    src: url('../fonts/Manrope-Medium.ttf');
+}
+
+.manrope-medium{
+    font-family: manrope-medium;
+}
+
+@font-face {
+    font-family: manrope-regular;
+    src: url('../fonts/Manrope-Regular.ttf');
+}
+
+.manrope-regular{
+    font-family: manrope-regular;
+}
+
+@font-face {
+    font-family: manrope-semibold;
+    src: url('../fonts/Manrope-SemiBold.ttf');
+}
+
+.manrope-semibold{
+    font-family: manrope-semibold;
+}
+
+/** Start Raleway **/
+
+@font-face{
+    font-family: raleway-rg;
+    src: url('../fonts/Raleway-Regular.ttf');
+}
+
+.raleway-rg{
+    font-family: raleway-rg;
+}
+
+@font-face{
+    font-family: raleway-me;
+    src: url('../fonts/Raleway-Medium.ttf');
+}
+
+.raleway-me{
+    font-family: raleway-me;
+}
+
+@font-face{
+    font-family: raleway-sb;
+    src: url('../fonts/Raleway-Semibold.ttf');
+}
+
+.raleway-sb{
+    font-family: raleway-sb;
+}
+
+@font-face{
+    font-family: raleway-bl;
+    src: url('../fonts/Raleway-Bold.ttf');
+}
+
+.raleway-bl{
+    font-family: raleway-bl;
+}
+
+/** Start Poppins **/
+
+@font-face {
+    font-family: poppins-lt;
+    src: url('../fonts/Poppins-Light.ttf');
+}
+
+.poppins-lt{
+    font-family: poppins-lt;
+}
+
+@font-face {
+    font-family: poppins-md;
+    src: url('../fonts/Poppins-Medium.ttf');
+}
+
+.poppins-md{
+    font-family: poppins-md;
+}
+
+@font-face {
+    font-family: poppins-sb;
+    src: url('../fonts/Poppins-SemiBold.ttf');
+}
+
+.poppins-sb{
+    font-family: poppins-sb;
+}
+
+@font-face {
+    font-family: poppins-eb;
+    src: url('../fonts/Poppins-ExtraBold.ttf');
+}
+
+.poppins-eb{
+    font-family: poppins-eb;
+}
+
+@font-face {
+    font-family: poppins-black;
+    src: url('../fonts/Poppins-Black.ttf');
+}
+
+.poppins-black{
+    font-family: poppins-black;
+}
+
+@font-face {
+    font-family: poppins-rg;
+    src: url('../fonts/Poppins-Regular.ttf');
+}
+
+.poppins-rg{
+    font-family: poppins-rg;
+}
+
+/**** End poppins ***/
+
+/** Start Questrial */
+
+@font-face {
+    font-family: questrial;
+    src: url('../fonts/Questrial-Regular.ttf');
+}
+
+.questrial{
+    font-family: questrial;
+}
+
+/** End Questrial */
+
+@font-face {
+    font-family: opensans-con-bl;
+    src: url('../fonts/OpenSans_Condensed-Bold.ttf');
+}
+
+.opensans-con-bl{
+    font-family: opensans-con-bl;
+}
+
+@font-face {
+    font-family: opensans-con-eb;
+    src: url('../fonts/OpenSans_Condensed-ExtraBold.ttf');
+}
+
+.opensans-con-eb{
+    font-family: opensans-con-eb;
+}
+
+@font-face {
+    font-family: opensans-con-re;
+    src: url('../fonts/OpenSans_Condensed-Regular.ttf');
+}
+
+.opensans-con-re{
+    font-family: opensans-con-re;
+}
+
+@font-face {
+    font-family: opensans-con-se;
+    src: url('../fonts/OpenSans_Condensed-SemiBold.ttf');
+}
+
+.opensans-con-se{
+    font-family: opensans-con-se;
+}
+
+@font-face {
+    font-family: opensans-semcon-bl;
+    src: url('../fonts/OpenSans_SemiCondensed-Bold.ttf');
+}
+
+.opensans-semcon-bl{
+    font-family: opensans-semcon-bl;
+}
+
+@font-face {
+    font-family: opensans-semcon-me;
+    src: url('../fonts/OpenSans_SemiCondensed-Medium.ttf');
+}
+
+.opensans-semcon-me{
+    font-family: opensans-semcon-me;
+}
+
+@font-face {
+    font-family: opensans-semcon-re;
+    src: url('../fonts/OpenSans_SemiCondensed-Regular.ttf');
+}
+
+.opensans-semcon-re{
+    font-family: opensans-semcon-re;
+}
+
+@font-face {
+    font-family: opensans-bl;
+    src: url('../fonts/OpenSans-Bold.ttf');
+}
+
+.opensans-bl{
+    font-family: opensans-bl;
+}
+
+@font-face {
+    font-family: opensans-eb;
+    src: url('../fonts/OpenSans-ExtraBold.ttf');
+}
+
+.opensans-eb{
+    font-family: opensans-eb;
+}
+
+@font-face {
+    font-family: opensans-light;
+    src: url('../fonts/OpenSans-Light.ttf');
+}
+
+.opensans-light{
+    font-family: opensans-light;
+}
+
+@font-face {
+    font-family: opensans-medium;
+    src: url('../fonts/OpenSans-Medium.ttf');
+}
+
+.opensans-medium{
+    font-family: opensans-medium;
+}
+
+@font-face {
+    font-family: opensans-regular;
+    src: url('../fonts/OpenSans-Regular.ttf');
+}
+
+.opensans-regular{
+    font-family: opensans-regular;
+}
+
+@font-face {
+    font-family: opensans-semibold;
+    src: url('../fonts/OpenSans-SemiBold.ttf');
+}
+
+.opensans-semibold{
+    font-family: opensans-semibold;
+}
+
+/**** Start redhat ****/
+
+@font-face {
+    font-family: redhat-display-black;
+    src: url('../fonts/RedHatDisplay-Black.ttf');
+}
+
+.redhat-display-black{
+    font-family: redhat-display-black;
+}
+
+@font-face {
+    font-family: redhat-display-bold;
+    src: url('../fonts/RedHatDisplay-Bold.ttf');
+}
+
+.redhat-display-bold{
+    font-family: redhat-display-bold;
+}
+
+@font-face {
+    font-family: redhat-display-extrabold;
+    src: url('../fonts/RedHatDisplay-ExtraBold.ttf');
+}
+
+.redhat-display-extrabold{
+    font-family: redhat-display-extrabold;
+}
+
+@font-face {
+    font-family: redhat-diplay-light;
+    src: url('../fonts/RedHatDisplay-Light.ttf');
+}
+
+.redhat-diplay-light{
+    font-family: redhat-diplay-light;
+}
+
+@font-face {
+    font-family: redhat-diplay-medium;
+    src: url('../fonts/RedHatDisplay-Medium.ttf');
+}
+
+.redhat-diplay-medium{
+    font-family: redhat-diplay-medium;
+}
+
+@font-face {
+    font-family: redhat-diplay-regular;
+    src: url('../fonts/RedHatDisplay-Regular.ttf');
+}
+
+.redhat-diplay-regular{
+    font-family: redhat-diplay-regular;
+}
+
+@font-face {
+    font-family: redhat-diplay-semibold;
+    src: url('../fonts/RedHatDisplay-SemiBold.ttf');
+}
+
+.redhat-diplay-semibold{
+    font-family: redhat-diplay-semibold;
+}
+
+/*** Start roboto ***/
+
+@font-face {
+    font-family: roboto-black;
+    src: url('../fonts/Roboto-Black.ttf');
+}
+
+.roboto-black{
+    font-family: roboto-black;
+}
+
+@font-face {
+    font-family: roboto-bold;
+    src: url('../fonts/Roboto-Bold.ttf');
+}
+
+.roboto-bold{
+    font-family: roboto-bold;
+}
+
+@font-face {
+    font-family: roboto-medium;
+    src: url('../fonts/Roboto-Medium.ttf');
+}
+
+.roboto-medium{
+    font-family: roboto-medium;
+}
+
+@font-face {
+    font-family: roboto-regular;
+    src: url('../fonts/Roboto-Regular.ttf');
+}
+
+.roboto-regular{
+    font-family: roboto-regular;
+}
+
+@font-face {
+    font-family: roboto-thin;
+    src: url('../fonts/Roboto-Thin.ttf');
+}
+
+.roboto-thin{
+    font-family: roboto-thin;
+}
+
+/*** Start sintony ***/
+
+@font-face {
+    font-family: sintony-bold;
+    src: url('../fonts/Sintony-Bold.ttf');
+}
+
+.sintony-bold{
+    font-family: sintony-bold;
+}
+
+@font-face {
+    font-family: sintony-regular;
+    src: url('../fonts/Sintony-Regular.ttf');
+}
+
+.sintony-regular{
+    font-family: sintony-regular;
+}
+
+@font-face {
+    font-family: space-bold;
+    src: url('../fonts/SpaceGrotesk-Bold.ttf');
+}
+
+.space-bold{
+    font-family: space-bold;
+}
+
+@font-face {
+    font-family: space-light;
+    src: url('../fonts/SpaceGrotesk-Light.ttf');
+}
+
+.space-light{
+    font-family: space-light;
+}
+
+@font-face {
+    font-family: space-medium;
+    src: url('../fonts/SpaceGrotesk-Medium.ttf');
+}
+
+.space-medium{
+    font-family: space-medium;
+}
+
+@font-face {
+    font-family: space-regular;
+    src: url('../fonts/SpaceGrotesk-Regular.ttf');
+}
+
+.space-regular{
+    font-family: space-regular;
+}
+
+@font-face {
+    font-family: space-semibold;
+    src: url('../fonts/SpaceGrotesk-Semisemibold.ttf');
+}
+
+.space-semibold{
+    font-family: space-bold;
+}
