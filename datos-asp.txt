@@ -1,0 +1,8 @@
+  agricolasp.com. , TXT , v=spf1 include:spf.protection.outlook.com -all 
+  autodiscover.agricolasp.com. 	14400 	CNAME 	autodiscover.outlook.com
+agricolasp.com. 	3600 	MX 	Prioridad: 10 Destino: agricolasp-com.mail.protection.outlook.com
+
+
+DNS1: ns3440.tl.controladordns.com
+
+DNS2: ns3441.tl.controladordns.com

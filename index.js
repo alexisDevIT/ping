@@ -1,463 +1,644 @@
-const status_address = {
-  1 : { id: 0, value: 1, name: 'Online', color: 'success' },
-  2 : { id: 1, value: 2, name: 'Offline', color: 'danger' }
-}
-
-
-let antenas = {}, date = new Date(), order = 2;
-
-document.addEventListener('DOMContentLoaded', () => {
-  getDataJSON();
-});
-
-// Obtener datos del archivo json //
-async function getDataJSON() {
-  try {
-    const peticion = await fetch('addresses.json');
-    const address = await peticion.json();
-    if (address) {
-      // Object recorrer //
-      Object.values(address).forEach( address => {
-        // Existe la key en el objeto ? //
-
-        antenas[address.address] ??= {...address};
-        fetch(`PHP/ping.php?address=${address.address}&type=${address.type}`)
-        .then( response => response.json())
-        .then( data => {
-          // Obtener la fecha //
-          fetch(`PHP/date.php`).then( response => response.json())
-          .then( date => {
-            // Editando el objeto antenas //
-            if (data && data.split(' ')[3] >= 2) {
-              antenas[address.address].status = 1;
-              antenas[address.address].last_ping = date;
-            } else { 
-              antenas[address.address].status = 2;
-              // Send Message error //
-              fetch(`PHP/messenger.php?address=${address.address}&name=${address.name}`);
-            }
-          });
-        });        
-      });
-
-      // Ordenar por status las addresses //
-      let orderAntenas = {};
-
-      order === 1 // Ordenar por status las address
-      ? orderAntenas = Object.values(antenas).sort((a,b) => a.status - b.status)
-      : orderAntenas = Object.values(antenas).sort((a,b) => b.status - a.status);
-      
-      paintAddress(orderAntenas);
-      
-
-    }
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-// Espera 10 segundos y ejecutalo cada diez segundos apartir de ese tiempo //
-setInterval(getDataJSON, 30000);
-
-const options = Object.values(status_address).map(element => `<option value="${element.value}">${element.name}</option>`);
-const selectStatus = document.querySelector('#select-status');
-selectStatus.innerHTML = `<option>--Status--</option>${options}`;
-selectStatus.addEventListener('change', () => {
-  order = Number(selectStatus.value);
-  getDataJSON();
-});
-
+const $ = (selector) => document.querySelector(selector);
 
 // Table items Addresses //
 const fragment = document.createDocumentFragment();
-const itemsAddress = document.querySelector('.itemsAddress');
-const templateAddress = document.querySelector('#templateAddress').content;
-const paintAddress = (antenas) => {
+const itemsAddress = $('.itemsAddress');
+const templateAddress = $('#templateAddress').content;
+const selectStatus = $('#select-status');
+const searchName = $('#searchName');
+const addPing = $('#addPing');
+const editPing = $('#editPing');
+const searchIP = $('#searchIP');
 
-  // Pintame los datos en la tabla //
-  Object.values(antenas).forEach( address => {
 
-    itemsAddress.innerHTML = '';
-    // Paint data tr //
-    const cloneTMP = templateAddress.cloneNode(true);
-    cloneTMP.querySelector('.name').textContent = address.name.toUpperCase();
-    cloneTMP.querySelector('.last-ping').textContent = 'Last Ping: ' + address.last_ping;
-    cloneTMP.querySelector('.address').textContent = address.address;
-    cloneTMP.querySelector('.address').href = `http://${address.address}`;
-    cloneTMP.querySelector('.status').textContent = status_address[address.status].name;
-    cloneTMP.querySelector('.color').classList.add(`bg-${status_address[address.status].color}`);
-    cloneTMP.querySelector('.content-template').classList.add(`border-start-${status_address[address.status].color}`)
 
-    if (address.status == 1 || address.status == 2) {
-      cloneTMP.querySelector('.bi-play').classList.add('d-none');
-      cloneTMP.querySelector('.bi-pause').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-trash').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-pencil-square').dataset.id = address.address;
-    } else if (address.status == 3) {
-      cloneTMP.querySelector('.bi-play').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-pause').classList.add('d-none');
-      cloneTMP.querySelector('.bi-trash').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-pencil-square').dataset.id = address.address;
-    }
+const message = {
 
-    if (address.configuration === "") {
-      cloneTMP.querySelector('.bi-download').classList.add('d-none');
-    } else {
-      cloneTMP.querySelector('.bi-download').href = address.configuration;
-      cloneTMP.querySelector('.bi-download').download = address.configuration;
-    }
+  clearData: () => {
 
-    fragment.appendChild(cloneTMP);
+    Swal.fire({
+      icon: 'error',
+      title: 'Datos vacíos!',
+      text: 'Revise la conexión!',
+      confirmButtonText: 'Entendido!'
+    });
 
-  });
+  },
 
-  itemsAddress.appendChild(fragment);
+  successDelete: (data) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Correcto!',
+      text: 'Se eliminó correctamente la IPv4: ' + data.address,
+      confirmButtonText: 'Entendido!'
+    });
+  },
 
-  // Modifica el archivo json //
-  fetch(`PHP/file_put_content.php`, {
-    method: 'POST',
-    body: JSON.stringify(antenas),
-    headers: { "Content-Type" : "Aplication/json" } 
-  }).then( response => response.json())
-  .then( data => {
-    if (data === 'OK') {
-      localStorage.setItem('antenas', JSON.stringify(antenas));
-    } else {
-      localStorage.setItem('antenas', JSON.stringify(antenas));
-    }
-  });
+  errorDelete: (data) => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Incorrecto!',
+      text: 'No se eliminó correctamente la IPv4: ' + data.address,
+      confirmButtonText: 'Entendido!'
+    });
+  },
+
+  repeatData: (address) => {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Cuidado!',
+      text: 'La IPv4: ' + address + ' ya existe!',
+      confirmButtonText: 'Entendido!'
+    });
+  },
+
+  successInsert: () => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Correcto!',
+      text: 'Los datos se agregaron correctamente!',
+      confirmButtonText: 'Entendido!'
+    });
+  }, 
+
+  errorInsert: () => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Incorrecto!',
+      text: 'Error al agregar los datos!',
+      confirmButtonText: 'Entendido!'
+    });
+  },
+
+  errorFormat: () => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Incorrecto!',
+      text: 'El formato del archivo no es permitido!',
+      confirmButtonText: 'Entendido!'
+    });
+  }, 
+
+  errorUpload: () => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Incorrecto!',
+      text: 'No se pudo copiar el archivo revise los permisos!',
+      confirmButtonText: 'Entendido!'
+    });
+  },
+  
+  successPause: (data) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Correcto!',
+      text: 'Antena pausada correctamente!',
+      confirmButtonText: 'Entendido!'
+    });
+  },
+
+  errorPause: () => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Incorrecto!',
+      text: 'La antena no fue pausada!',
+      confirmButtonText: 'Entendido!'
+    });
+  }
 
 }
 
-// Buscar por parametros //
-const searchName = document.querySelector('#searchName');
-searchName.addEventListener('submit', e => {
-  e.preventDefault();
-  const formData = new FormData(searchName);
-  const results = Object.values(antenas).filter( element => 
-    element.name.toLowerCase().includes(formData.get('searchIP').toLowerCase())
-  );
 
-  // Ordenar por status las addresses //
-  let orderAntenas = {};
-  order === 1 // Ordenar por status las address
-  ? orderAntenas = Object.values(results).sort((a,b) => a.status - b.status)
-  : orderAntenas = Object.values(results).sort((a,b) => b.status - a.status);
-  paintSearchResults(orderAntenas);
+let saveData = {}, order = 0, saveID = {};
+
+const status_address = {
+  0 : { id: 0, value: 0, name: 'Offline', color: 'danger' },
+  1 : { id: 1, value: 1,name: 'Online', color: 'success' },
+}
+
+
+
+const server = {
+  windows: 'windows', 
+  linux: 'linux'
+};
+
+
+
+let date = new Date();
+
+
+// Obtener las direcciones IPv4 //
+const getAddresses = async () => {
+  try {
+    const peticion = await fetch(`PHP/get-addresses.php?order=${order}`);
+    const response = await peticion.json();
+    return response;
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+
+// Obtener las direcciones IPV4 //
+getAddresses()
+  .then( addresses => {
+    
+  addresses !== 0
+    ? paintAddresses(addresses)
+    : message.clearData();
 
 });
 
 
-// Pintar los resultados //
-const itemsSearch = document.querySelector('.itemsSearch');
-function paintSearchResults(results) {
-  itemsAddress.classList.add('d-none');
-  itemsSearch.classList.remove('d-none');
-  // Pintame los datos en la tabla //
-  Object.values(results).forEach( address => {
+// Ahora cada 3 segundos //
+let executionInterval = setInterval(() => {
+  
+  getAddresses(0)
+  .then( addresses => {
+    
+  addresses !== 0
+    ? paintAddresses(addresses)
+    : message.clearData();
 
-    itemsSearch.innerHTML = '';
-    // Paint data tr //
-    const cloneTMP = templateAddress.cloneNode(true);
-    cloneTMP.querySelector('.name').textContent = address.name.toUpperCase();
-    cloneTMP.querySelector('.last-ping').textContent = 'Last Ping: ' + address.last_ping;
-    cloneTMP.querySelector('.address').textContent = address.address;
-    cloneTMP.querySelector('.address').href = `http://${address.address}`;
-    cloneTMP.querySelector('.status').textContent = status_address[address.status].name;
-    cloneTMP.querySelector('.color').classList.add(`bg-${status_address[address.status].color}`);
-    cloneTMP.querySelector('.content-template').classList.add(`border-start-${status_address[address.status].color}`)
+});
 
-    if (address.status == 1 || address.status == 2) {
-      cloneTMP.querySelector('.bi-play').classList.add('d-none');
-      cloneTMP.querySelector('.bi-pause').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-trash').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-pencil-square').dataset.id = address.address;
-    } else if (address.status == 3) {
-      cloneTMP.querySelector('.bi-play').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-pause').classList.add('d-none');
-      cloneTMP.querySelector('.bi-trash').dataset.id = address.address;
-      cloneTMP.querySelector('.bi-pencil-square').dataset.id = address.address;
+}, 30000);
+
+
+const paintAddresses = (addresses) => {
+
+    if (addresses === 0) {
+      message.clearData();
     }
 
-    if (address.configuration === "") {
-      cloneTMP.querySelector('.bi-download').classList.add('d-none');
-    } else {
-      cloneTMP.querySelector('.bi-download').href = address.configuration;
-      cloneTMP.querySelector('.bi-download').download = address.configuration;
+    if(addresses.length === 0) {
+      message.clearData();
     }
 
-    fragment.appendChild(cloneTMP);
+    saveData = addresses;
 
-  });
+    // Save data addresses db //
+    if ( order == 0 ) {
+      saveData = Object.values(addresses).sort((a, b) => a.status - b.status )
+    }
 
-  itemsSearch.appendChild(fragment);
+    if (order == 1) {
+      saveData = Object.values(addresses).sort((a, b) => b.status - a.status );
+    }    
+    
+    // Pintame los datos en la tabla //
+    Object.values(saveData).forEach( address => {
+
+        itemsAddress.innerHTML = '';
+
+        // Paint data tr //
+        const cloneTMP = templateAddress.cloneNode(true);
+        const $clone = (selector) => cloneTMP.querySelector(selector);
+
+        $clone('.name').textContent = address.name.toUpperCase();
+        $clone('.last-ping').textContent = 'Last Ping: ' + address.ultimo_ping;
+        $clone('.address').textContent = address.address;
+        $clone('.address').href = `http://${address.address}`;
+        $clone('.status').textContent = status_address[address.status].name + ': ' + address.type;
+        $clone('.color').classList.add(`bg-${status_address[address.status].color}`);
+        $clone('.content-template').classList.add(`border-start-${status_address[address.status].color}`)
+
+        if (address.status == 0 || address.status == 1) {
+            $clone('.bi-play').classList.add('d-none');
+            $clone('.bi-pause').dataset.id = address.id;
+            $clone('.bi-trash').dataset.id = address.id;
+            $clone('.bi-pencil-square').dataset.id = address.id;
+        }
+
+        if (address.status == 3) {
+            $clone('.bi-play').dataset.id = address.address;
+            $clone('.bi-pause').classList.add('d-none');
+            $clone('.bi-trash').dataset.id = address.id;
+            $clone('.bi-pencil-square').dataset.id = address.id;
+        }
+
+        if (address.conf_file === "") {
+            $clone('.bi-download').classList.add('d-none');
+        }
+
+        if (address.conf_file !== "") {
+            $clone('.bi-download').href = address.conf_file;
+            $clone('.bi-download').download = address.conf_file;
+        }
+
+        fragment.appendChild(cloneTMP);
+
+        ping(address); // Hacer Ping //
+
+    });
+
+    itemsAddress.appendChild(fragment);
 
 }
 
-const searchIP = document.querySelector('#searchIP');
-searchIP.addEventListener('keyup', () => {
-  if (searchIP.value === '') {
-    itemsAddress.classList.remove('d-none');
-    itemsSearch.classList.add('d-none');
-  } else {
-    const results = Object.values(antenas).filter( element => 
-      element.name.toLowerCase().includes(searchIP.value.toLowerCase())
+
+document.addEventListener('click', function (e) {
+
+  if (e.target.classList.contains('bi-pause')) {
+    const data = saveData.find( 
+      element => element.id == e.target.dataset.id 
+    );
+    pausedAddress(data);
+  }
+
+  if ( e.target.classList.contains('bi-trash') ) {
+
+    const data = saveData.find( 
+      element => element.id == e.target.dataset.id 
     );
     
-    // Ordenar por status las addresses //
-    let orderAntenas = {};
-    order === 1 // Ordenar por status las address
-    ? orderAntenas = Object.values(results).sort((a,b) => a.status - b.status)
-    : orderAntenas = Object.values(results).sort((a,b) => b.status - a.status);
-    paintSearchResults(orderAntenas);
+    deleteAddress(data);
 
-  }
-})
-
-
-// Controls event click //
-const editPing = document.getElementById('editPing');
-let IPv4Changed;
-itemsAddress.addEventListener('click', e => {
-  if (e.target.classList.contains('bi-pause')) {
-    Swal.fire({
-      icon: 'question',
-      title: '¿Esta seguro?',
-      text: `Esta por pausar la IPv4: ${e.target.dataset.id}`,
-      showCancelButton: true,
-      cancelButtonText: 'Cancelar!',
-      confirmButtonText: 'Pausar!',
-    }).then( promise => {
-      if (promise.isConfirmed) {
-        getAddressPaused()
-        .then( pausadas => {
-
-          if (pausadas) {
-            pausadas[e.target.dataset.id] ??= antenas[e.target.dataset.id];
-            addPaused(pausadas);
-            delete antenas[e.target.dataset.id];
-            file_put_content(antenas);
-          } else {
-            // Solo agregar el nuevo pausado //
-            addPaused(antenas[e.target.dataset.id]);
-            delete antenas[e.target.dataset.id];
-            file_put_content(antenas);
-
-          }
-
-        });
-      }
-    });
-  }
-
-  if (e.target.classList.contains('bi-trash')) {
-    Swal.fire({
-      icon: 'warning',
-      title: '¿Esta seguro?',
-      text: `Esta por eliminar la IPv4: ${e.target.dataset.id}`,
-      showCancelButton: true,
-      cancelButtonText: 'Cancelar!',
-      confirmButtonText: 'Eliminar!',
-    }).then( promise => {
-
-      if (promise.isConfirmed) {
-        delete antenas[e.target.dataset.id];
-        file_put_content(antenas); 
-      }
-
-    });
   }
 
   if (e.target.classList.contains('bi-pencil-square')) {
-    editPing.querySelector('.modal-title').textContent = antenas[e.target.dataset.id].name;
-    editPing.querySelector('#address').value = antenas[e.target.dataset.id].address;
-    editPing.querySelector('#name').value = antenas[e.target.dataset.id].name;
-    editPing.querySelector('#type').selectedIndex = antenas[e.target.dataset.id].type;
-    IPv4Changed = e.target.dataset.id;
+
+    saveID = saveData.find( 
+      element => element.id == e.target.dataset.id 
+    );
+
+    if (saveID.length !== 0) {
+
+      editPing.querySelector('.modal-title').textContent = saveID.name;
+      editPing.querySelector('#address').value = saveID.address;
+      editPing.querySelector('#name').value = saveID.name;
+      editPing.querySelector('#type').selectedIndex = saveID.type;
+
+    }
+    
   }
+
+  e.stopPropagation();
 
 });
 
-// Editando la IP //
-editPing.addEventListener('submit', e => {
 
+// Pausar una ip //
+const pausedAddress = (data) => {
+
+  Swal.fire({
+    icon: 'question',
+    title: 'Confirmar!',
+    text: '¿ Está seguro de pausar a ' + data.name + ' ?',
+    confirmButtonText: 'Pausar',
+    showCancelButton: true,
+    cancelButtonText: 'Cancelar',
+    cancelButtonColor: '#DC2626', 
+  })
+
+  .then( promise => {
+
+    if ( promise.isConfirmed ) {
+      fetch(`PHP/update-status.php?id=${data.id}&status=${2}`)
+        .then( response => response.json())
+        .then( status => {
+        
+        status === 'OK'
+          ? message.successPause(data)
+          : message.errorPause(data);
+
+          getAddresses()
+            .then( addresses => {
+            paintAddresses(addresses)
+          });
+
+      });
+    }
+
+  })
+
+}
+
+
+// Eliminar una ip //
+const deleteAddress = (data) => {
+
+  Swal.fire({
+    icon: 'question',
+    title: 'Confirmar!',
+    text: '¿ Está seguro de eliminar a ' + data.name + ' ?',
+    confirmButtonText: 'Eliminar',
+    showCancelButton: true,
+    cancelButtonText: 'Cancelar',
+    cancelButtonColor: '#DC2626', 
+  })
+
+  .then( promise => {
+
+    if ( promise.isConfirmed ) {
+      fetch(`PHP/delete-address.php?id=${data.id}`)
+        .then( response => response.json())
+        .then( status => {
+        
+        status === 'OK'
+          ? message.successDelete(data)
+          : message.errorDelete(data);
+
+          getAddresses()
+            .then( addresses => {
+            paintAddresses(addresses)          
+          });
+
+      });
+    }
+
+  })
+
+}
+
+editPing.addEventListener('submit', e => {
   e.preventDefault();
   const formData = new FormData(editPing);
 
-  // Cambió la IP //
-  if (formData.get('address') != IPv4Changed) { // Puede cambiar los demas datos //
-    
-    delete antenas[IPv4Changed];
+  if (formData.get('configuration').size === 0) {
+    updateData(formData,0,saveID.id)
+      .then( status => {
 
-    antenas[formData.get('address')] = {
-      name: formData.get('name'),
-      address: formData.get('address'),
-      status: 1,
-      last_ping: date.toLocaleDateString(),
-      configuration: "",
-      type: formData.get('type'),
-    }
+      status === 'OK'
+        ? message.successInsert()
+        : message.errorInsert();
 
-    if (formData.get('configuration').size > 0) { // Esta enviando archivos //
-
-      antenas[formData.get('address')].configuration = `assets/respaldos/${formData.get('address')}-${formData.get('configuration').name}`;
-      localStorage.setItem('antenas', JSON.stringify(antenas));
-      file_put_content(antenas);
-
-    } else { // No esta enviando archivos //
+      getAddresses()
+        .then( addresses => {
+        paintAddresses(addresses)
+      });
       
-      // Enviar // 
-      localStorage.setItem('antenas', JSON.stringify(antenas));
-      file_put_content(antenas);
+    });
+  }
 
-    }
-    
-  } else {
-    
-    // El id del objeto es la misma solo cambian los demas valores //
-    antenas[formData.get('address')].name !== formData.get('name')
-    ? antenas[formData.get('address')].name = formData.get('name')
-    : antenas[formData.get('address')].name = antenas[formData.get('address')].name;
+  if (formData.get('configuration').size !== 0) {
+    uploadFile(formData)
+      .then( response => {
+      if (response === 'OK') {
 
-    antenas[formData.get('address')].type !== formData.get('type')
-    ? antenas[formData.get('address')].type = formData.get('type')
-    : antenas[formData.get('address')].type = antenas[formData.get('address')].type;
+        updateData(formData,1,saveID.id)
+          .then( status => {
 
-    if (formData.get('configuration').size > 0) { // Esta enviando archivos //
+          status === 'OK'
+            ? message.successInsert()
+            : message.errorInsert();
 
-      antenas[formData.get('address')].configuration = `assets/respaldos/${formData.get('address')}-${formData.get('configuration').name}`;
-      localStorage.setItem('antenas', JSON.stringify(antenas));
-      file_put_content(antenas);
+          getAddresses()
+            .then( addresses => {
+            paintAddresses(addresses);
+          });
 
-    } else { // No esta enviando archivos //
-      
-      // Enviar // 
-      localStorage.setItem('antenas', JSON.stringify(antenas));
-      file_put_content(antenas);
-
-    }
-    
+        });
+      }
+    })
   }
 
 });
 
 
-// Obtener IP pausadas //
-async function addPaused(datos) {
-  try {
-    fetch(`PHP/addPaused.php`, {
-      method: 'POST',
-      body: JSON.stringify(datos)
-    }).then( response => response.json())
+const ping = (address) => {
+  
+  fetch(`PHP/ping.php?address=${address.address}&type=${address.type}&server=${server.windows}`)
+    .then( response => response.json())
     .then( data => {
-      if (data === 'OK') {
-        getDataJSON(); // Volver a cargar los datos //
-        localStorage.setItem('antenas', JSON.stringify(antenas));
-        Swal.fire({
-          icon: 'success',
-          title: 'Correcto!',
-          text: `Hemos pausado la IPv4 correctamente!`,
-          confirmButtonText: 'Entendido!'
-        });
+
+      if ( data === 0 ) {
+        fetch(`PHP/update-status.php?status=0&id=${address.id}`);
       }
+
+      if ( data !== 0 ) {
+        processResponse[server.windows](data,address);
+      }
+
+  });
+}
+
+
+
+// Respuesta del ping //
+const processResponse = {
+  windows : (data,address) => {
+
+    if ( data.split("(")[1].split("%")[0] == 0 && address.type == 'Normal') {
+      fetch(`PHP/update-status.php?status=1&id=${address.id}`);
+    }
+
+    if ( data.split("(")[1].split("%")[0] == 0 && address.type == 'Scan' ) {
+      fetch(`PHP/update-status.php?status=0&id=${address.id}`);
+    }
+
+    if ( data.split("(")[1].split("%")[0] != 0  && address.type == 'Normal' ) {
+      fetch(`PHP/update-status.php?status=0&id=${address.id}`);
+    }
+
+    if ( data.split("(")[1].split("%")[0] != 0  && address.type == 'Scan' ) {
+      fetch(`PHP/update-status.php?status=1&id=${address.id}`);
+    }
+  }, 
+
+  linux: (data, address) => {
+
+    if ( data.split(' ')[3] >= 2 && address.type == 'Normal' ) {
+      fetch(`PHP/update-status.php?status=1&id=${address.id}`);
+    }
+
+    if ( data && data.split(' ')[3] >= 2 && address.type == 'Scan' ) {
+      fetch(`PHP/update-status.php?status=0&id=${address.id}`);
+    }
+
+    if ( data && data.split(' ')[3] < 2 && address.type == 'Normal' ) {
+      fetch(`PHP/update-status.php?status=0&id=${address.id}`);
+    }
+
+    if ( data && data.split(' ')[3] < 2 && address.type == 'Scan' ) {
+      fetch(`PHP/update-status.php?status=1&id=${address.id}`);
+    }
+
+  }
+}
+
+
+
+// Ordenar por status //
+const options = Object.values(status_address).map(element => `<option value="${element.value}">${element.name}</option>`);
+selectStatus.innerHTML = `<option>--Status--</option>${options}`;
+selectStatus.addEventListener('change', () => {
+  order = Number(selectStatus.value)
+  paintAddresses(saveData);
+});
+
+
+
+// Buscar por parametros //
+searchName.addEventListener('submit', e => {
+
+  e.preventDefault();
+  const formData = new FormData(searchName);
+
+  const data = Object.values(saveData).filter( element => 
+    element.name.toLowerCase()
+      .includes(formData.get('searchIP').toLowerCase())
+  );
+
+  if (data.length !== 0) {
+
+    // Frenar la ejecucion del ping //
+    clearInterval(executionInterval);
+
+    paintAddresses(data);
+
+    // Reiniciar el tiempo //
+    executionInterval = setInterval(() => { 
+
+      getAddresses(0)
+        .then( addresses => { 
+          paintAddresses(addresses)
+      });
+
+    }, 30000);
+
+
+  } else {
+    message.clearData();
+  }
+
+});
+
+
+searchIP.addEventListener('keyup', () => {
+  if (searchIP.value == '') {
+    getAddresses()
+      .then( addresses => {
+      paintAddresses(addresses);
     });
+  }
+});
+
+
+// Agregar una nueva IPv4 //
+addPing.addEventListener('submit', e => {
+
+  e.preventDefault();
+  const formData = new FormData(addPing);
+
+  const newIPv4 = formData.get('address');
+
+  const validIPv4 = saveData.some (
+    element => element.address == newIPv4
+  );
+  
+  validIPv4
+    ? message.repeatData(newIPv4)
+    : insertData(formData);
+  
+});
+
+
+const insertData = (formData) => {
+
+  if (formData.get('configuration').size !== 0) { // Insertar //
+
+    uploadFile(formData)
+      .then( response => {
+
+      if (response === 'OK') {
+
+        insertDataBase(formData)
+          .then( data => {
+          
+          data === 'OK'
+            ? message.successInsert()
+            : message.errorInsert();
+          
+          // Obtener nuevamente las IP's //
+          getAddresses()
+            .then( addresses => {
+            paintAddresses(addresses)          
+          });
+
+        });
+
+      }
+
+      if (response === 0) {
+        message.errorFormat();
+      }
+
+      if (response === 1) {
+        message.errorUpload();
+      }
+
+    });
+  }
+
+
+  if (formData.get('configuration').size === 0) { // Upload file //
+
+    insertDataBase(formData)
+      .then( data => {
+      
+      data === 'OK'
+        ? message.successInsert()
+        : message.errorInsert();
+      
+      // Obtener nuevamente las IP's //
+      getAddresses()
+        .then( addresses => {
+        paintAddresses(addresses)      
+      });
+
+    });
+
+  }
+
+}
+
+
+
+// Subir la configuration //
+const uploadFile = async(formData) => {
+  try {
+    
+    const peticion = await fetch(`PHP/upload-file.php`, {
+      method: 'POST',
+      body: formData
+    });
+    const response = await peticion.json();
+    return response;
+
   } catch (error) {
     console.log(error)
   }
 }
 
 
-// Formulario //
-const addPing = document.querySelector('#addPing');
-addPing.addEventListener('submit', e => {
-  e.preventDefault();
-  const formData = new FormData(addPing);
+// Actualizar datos //
+const insertDataBase = async(formData) => {
+  try {
 
-  if (antenas[formData.get('address')]) {
-
-    // Ya existe la direccion IP //
-    Swal.fire({
-      icon: 'warning',
-      title: 'IPv4 Existente!',
-      text: `La IPv4: ${formData.get('address')} esta registrada como ${antenas[formData.get('address')].name.toUpperCase()}`,
-      confirmButtonText: 'Entendido!'
+    const peticion = await fetch(`PHP/insert-data.php`, {
+      method: 'POST',
+      body: formData
     });
+    const response = await peticion.json();
+    return response;
 
-  } else {
-
-    antenas[formData.get('address')] ??= {
-      "name" : formData.get('name'),
-      "address" : formData.get('address'),
-      "status" : 1,
-      "last_ping" : `${date.toLocaleDateString()}:${date.getHours()}:${date.getMinutes()}`,
-      "configuration": "",
-      "type" : formData.get('type'),
-    }
-
-    if (formData.get('configuration').size == 0) {
-      // Guardar Objeto //
-      file_put_content(antenas);
-
-    } else {
-
-      fetch(`PHP/upload-file.php`, {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then( data => {
-        if (data === 'OK') {
-
-          antenas[formData.get('address')].configuration = `assets/respaldos/${formData.get('address')}-${formData.get('configuration').name}`;
-      
-          file_put_content(antenas);
-
-        } else if (data === 'FILEERROR') {
-          Swal.fire({
-            icon: 'warning',
-            title: 'Error!',
-            text: `El formato del archivo de configuracion no esta permitido!`,
-            confirmButtonText: 'Entendido!'
-          });
-        }
-
-      });
-    }
+  } catch (error) {
+    console.log(error)
   }
-});
-
-
-// Agregar o modificar Objeto //
-function file_put_content(antenas) {
-  // Guardar Objeto //
-  fetch(`PHP/file_put_content.php`, {
-    method: 'POST',
-    body: JSON.stringify(antenas),
-    headers: { "Content-Type" : "Aplication/json" }
-  })
-  .then( response => response.json())
-  .then( data => {
-    if (data === 'OK') {
-      getDataJSON();
-      addPing.reset();
-      editPing.reset();
-      localStorage.setItem('antenas', JSON.stringify(antenas));
-      Swal.fire({
-        icon: 'success',
-        title: 'Correcto!',
-        text: `Datos agregados correctamente!`,
-        confirmButtonText: 'Entendido!'
-      });
-    }
-  });
 }
 
-// Obtener todas las address //
-async function getAddressPaused() {
+const updateData = async(formData,file,id) => {
   try {
-    const peticion = await fetch('pausedAddress.json');
-    const address = await peticion.json();
-    return address;
+
+    const peticion = await fetch(`PHP/update-data.php?file=${file}&id=${id}`, {
+      method: 'POST',
+      body: formData
+    });
+    const response = await peticion.json();
+    return response;
+
   } catch (error) {
     console.log(error);
   }
